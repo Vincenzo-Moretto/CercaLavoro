@@ -125,23 +125,66 @@ const jobs = [
   },
 ];
 
-//Esercizio 1
-const cercaLavori = (queryLocation, queryTitolo) => {
-  let risultati = {
-    results: [],
-    count: 0,
-  };
+// Funzione per cercare lavori in base al titolo e alla posizione geografica
+function searchJobs(jobTitle, jobLocation) {
+  // Converti le stringhe di input in minuscolo per rendere la ricerca case insensitive
+  const titleLower = jobTitle.toLowerCase();
+  const locationLower = jobLocation.toLowerCase();
+
+  // Array per memorizzare i risultati
+  const result = [];
+
+  // Itera su ogni inserzione di lavoro
   for (let i = 0; i < jobs.length; i++) {
-    const lavoro = jobs[i];
-    let locationLavoroCorrente = lavoro.location.toLowerCase();
-    let titleLavoroCorrente = lavoro.title.toLowerCase();
-    let queryTitoloMin = queryTitolo.toLowerCase();
-    let queryLocationMin = queryLocation.toLowerCase();
-    console.log(locationLavoroCorrente, titleLavoroCorrente, queryLocationMin, queryTitoloMin);
-    if (locationLavoroCorrente.includes(queryLocationMin) && titleLavoroCorrente.includes(queryTitoloMin)) {
-      risultati.results.push(lavoro);
-      risultati.count++;
+    const job = jobs[i];
+    // Converti il titolo e la posizione dell'annuncio corrente in minuscolo
+    const jobTitleLower = job.title.toLowerCase();
+    const jobLocationLower = job.location.toLowerCase();
+
+    // Verifica se il titolo del lavoro e la posizione soddisfano entrambi i criteri di ricerca
+    if (jobTitleLower.includes(titleLower) && jobLocationLower.includes(locationLower)) {
+      // Se soddisfano, aggiungi l'inserzione alla lista dei risultati dopo aver rimosso i campi non necessari
+      const { description, requirements, benefits, company_profile, ...filteredJob } = job;
+      result.push(filteredJob);
     }
   }
-  return risultati;
-};
+
+  // Numero totale di inserzioni trovate
+  const count = result.length;
+
+  // Ritorna i risultati
+  return {
+    result: result,
+    count: count,
+  };
+}
+
+// Funzione per mostrare i risultati nella pagina HTML
+function displayResults(searchResult) {
+  const resultsList = document.getElementById("resultsList");
+  resultsList.innerHTML = ""; // Pulisce i risultati precedenti
+
+  if (searchResult.count === 0) {
+    // Se non ci sono risultati, mostra un messaggio di avviso
+    alert("Nessun risultato trovato!");
+  } else {
+    // Ordina i risultati per titolo prima di mostrarli
+    const sortedResults = searchResult.result.sort((a, b) => a.title.localeCompare(b.title));
+
+    // Mostra ogni risultato ordinato nella lista
+    sortedResults.forEach((job) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = `Titolo: ${job.title}, Posizione: ${job.location}`;
+      resultsList.appendChild(listItem);
+    });
+  }
+}
+
+// Aggiunge un listener per l'evento click al pulsante di ricerca
+document.getElementById("searchButton").addEventListener("click", function () {
+  const jobTitle = document.getElementById("jobTitle").value;
+  const jobLocation = document.getElementById("jobLocation").value;
+
+  const searchResult = searchJobs(jobTitle, jobLocation);
+  displayResults(searchResult);
+});
