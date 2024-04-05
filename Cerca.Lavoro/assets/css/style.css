@@ -53,3 +53,17 @@ body {
   padding: 0;
   margin-top: 20px;
 }
+/* Stili per l'elenco dei risultati */
+.container ul {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+/* Stili per l'immagine dei risultati */
+.container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 20px auto;
+}
